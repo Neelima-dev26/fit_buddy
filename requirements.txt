@@ -1,0 +1,6 @@
+gradio>=5.0,<6.0
+transformers>=4.44
+torch
+accelerate
+sentence-transformers
+numpy

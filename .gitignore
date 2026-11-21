@@ -1,0 +1,10 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.idea/
+.DS_Store
+eval/results.csv
+eval/understanding_results.csv
+eval/latency_results.csv
+*.zip
