@@ -74,7 +74,12 @@ check("plan: 4 days a week gives 4 training days", sum(d["type"] != "REST" for d
 check("plan: reply is a compact week table with rest days", hist[-1]["content"].count("| Rest ") == 3 and " Upper " in hist[-1]["content"] and "min" in hist[-1]["content"])
 state, hist = chat(["Suggest a workout"], state=state, days=4, equipment=["Gym access"], limits="sore knees")
 reply = hist[-1]["content"].lower()
-check("session: gym access uses machines", any(w in reply for w in ("machine", "cable", "lat pulldown", "leg curl", "dumbbell")))
+# the planned strength sessions (not today's, which may be a rest or recovery day) must use the gym equipment
+import planner as _planner
+from datetime import date as _date
+gym_text = " ".join(_planner.session_markdown(_planner.session_for(state["workout_plan"], i, _date(2026, 11, 16))).lower()
+                    for i, d in enumerate(state["workout_plan"]["schedule"]) if d["type"] != "REST")
+check("session: gym access uses machines", any(w in gym_text for w in ("machine", "cable", "lat pulldown", "leg curl", "dumbbell")))
 check("session: sore knees removes knee-stressing moves", not any(w in reply for w in KNEE_MOVES), reply[:300])
 check("session: the reply names which preferences it used", "built for" in reply and "gym access" in reply and "knee" in reply)
 state, hist = chat(["Suggest a workout"], equipment=["Bodyweight only"], days=3, minutes=20)

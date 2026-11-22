@@ -1,4 +1,4 @@
-"""Workout planner: turns a normalized profile (profile.py) into a weekly plan and daily sessions.
+"""Workout planner: turns a normalized profile (userprofile.py) into a weekly plan and daily sessions.
 
 Pure code, no model: days per week, minutes, equipment, level, goal, limitations, and age all change the result.
 The language model only explains or coaches around what this module decides.

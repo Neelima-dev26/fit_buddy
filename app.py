@@ -8,6 +8,18 @@ from datetime import date, datetime, timedelta
 
 os.environ.setdefault("GRADIO_ANALYTICS_ENABLED", "False")  # avoids a slow network check at startup
 
+if os.environ.get("SPACE_ID"):   # running on Hugging Face Spaces (never set on a laptop)
+    os.environ.setdefault("FITBUDDY_DEVICE", "cpu")   # FitBuddy runs on the CPU, also on a ZeroGPU Space
+    try:
+        import spaces   # present on ZeroGPU Spaces; must be imported before torch
+
+        @spaces.GPU
+        def _zero_gpu_marker():
+            """Never called. A ZeroGPU Space refuses to start unless some function carries @spaces.GPU."""
+            return True
+    except Exception:   # a normal CPU Space does not have the package, which is fine
+        pass
+
 
 def log(msg):
     print(f"[FitBuddy] {msg}", flush=True)

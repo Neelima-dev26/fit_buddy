@@ -25,14 +25,20 @@ This zips exactly what is in the repository (no `venv`). Check by unzipping it i
 running `pip install -r requirements.txt`, and running the four test files in `tests/`.
 
 ## 4. Optional: Hugging Face Space (free CPU)
-1. Create an account, then New Space: SDK Gradio, hardware CPU basic, public or private.
-2. Add the Space as a second remote and push:
+1. Check your local Gradio version: `pip show gradio`. In `README.md`, set `sdk_version:` in the header to that exact version
+   (the project was tested with 5.50.0). Leave `python_version` unset: the Space runs fine on its default Python 3.10. Commit the change.
+2. On huggingface.co: profile > New Space. Name `fitbuddy`, SDK Gradio, hardware **CPU basic (free)**, Public. Do not pick ZeroGPU: a free
+   account cannot change it later. If a Space does have ZeroGPU, `app.py` already contains the marker function that lets it start.
+3. Create an access token with **write** permission: profile > Settings > Access Tokens > New token.
+4. Push your code to the Space (the new Space starts with a README, so overwrite it):
    ```
-   git remote add space https://huggingface.co/spaces/<user>/fitbuddy
-   git push space main
+   git remote add space https://huggingface.co/spaces/<your-hf-username>/fitbuddy
+   git push space main --force
    ```
-   (Use a Hugging Face access token with write permission as the password.)
-3. The header of `README.md` tells the Space how to start (`app_file: app.py`). If the build fails, set `sdk_version` to the Gradio version you
-   tested locally (`pip show gradio`).
-4. The first start downloads the models, so it takes several minutes. A free Space can be slow and goes to sleep when idle.
-   If you skip the Space, say in the documents that the project runs locally.
+   Username: your Hugging Face username. Password: the token.
+5. Open the Space's **Logs** tab. The build installs the libraries (several minutes), then the app downloads the model on first start.
+6. The free CPU is slower than a laptop. If replies take a minute or more, open Space **Settings > Variables and secrets > New variable**,
+   name `FITBUDDY_MODEL`, value `Qwen/Qwen2.5-0.5B-Instruct`, then restart the Space. Say in your documents which model the Space uses.
+7. A free Space sleeps when idle, and the first visit afterward takes a while to wake it.
+If the build fails, read the last lines of the Logs tab. Common causes: `sdk_version` not matching Gradio, or the build running out of time.
+If you skip the Space, say in the documents that the project runs locally.

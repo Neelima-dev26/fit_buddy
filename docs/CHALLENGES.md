@@ -20,6 +20,10 @@ If the app does not start, the terminal prints lines starting with `[FitBuddy]` 
 | 8 | Syntax error on Python 3.11 only | Developer machine used Python 3.12 (nested f-string quotes) | Added a scan for 3.11-incompatible syntax |
 | 9 | Layout bugs (missing chat panel, misaligned cards, clipped rings) | Component placement and Gradio padding | Fixed from screenshots, iteration by iteration |
 | 10 | Safety scope (calories, weight loss, medical) | Small models are unreliable with numbers and health advice | Code-level safety layer, no calorie or weight targets |
+| 11 | A workout report such as "did a 45 minute dumbbell workout" was answered as a question, and the model wrote a made-up diary entry | The logging rule only matched "did a workout"; the model was given notes and told to answer | Broader workout-report rule, reports are never answered from the notes, and the model is told never to write as the user |
+| 12 | Hugging Face Space showed "TypeError: argument of type 'bool' is not iterable" | The README header named an old Gradio version (5.9.1) | Set `sdk_version` to the tested Gradio version (5.50.0) |
+| 13 | Space showed "Runtime error: No @spaces.GPU function detected" | The Space had ZeroGPU hardware, which a free account cannot change and which expects a GPU function | On a Space, `app.py` adds an unused `@spaces.GPU` marker and keeps the model on the CPU |
+| 14 | One test failed only on some days of the week | It assumed every day is a training day, but rest and recovery days exist | Test made weekday-independent; app tests run for all seven days |
 
 ## Known limitations
 See section "Limitations and Threats to Validity" of the design document.

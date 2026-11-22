@@ -51,5 +51,18 @@ try:
     check("latency: a model that cannot load is reported", False)
 except RuntimeError:
     check("latency: a model that cannot load is reported", True)
+
+# ---- Hugging Face Space startup: CPU device is forced, and a missing "spaces" package is harmless ----
+import subprocess
+code = ("import os; os.environ['SPACE_ID']='user/fitbuddy'; os.environ['FITBUDDY_NO_LLM']='1'; os.environ['FITBUDDY_NO_EMBED']='1'; "
+        "import sys, types; g=types.ModuleType('gradio'); "
+        "from unittest.mock import MagicMock; sys.modules['gradio']=MagicMock(); "
+        "import app; print('DEVICE=' + os.environ.get('FITBUDDY_DEVICE','')); print('OK')")
+r = subprocess.run([sys.executable, "-c", code], cwd=os.path.join(HERE, ".."), capture_output=True, text=True)
+check("space: on Hugging Face the app starts even without the spaces package", "OK" in r.stdout, r.stderr[-300:])
+check("space: the device is forced to cpu there", "DEVICE=cpu" in r.stdout, r.stdout[-200:])
+code2 = code.replace("os.environ['SPACE_ID']='user/fitbuddy'; ", "")
+r2 = subprocess.run([sys.executable, "-c", code2], cwd=os.path.join(HERE, ".."), capture_output=True, text=True)
+check("space: on a laptop nothing changes (no forced device)", "DEVICE=\n" in r2.stdout or "DEVICE=" in r2.stdout and "DEVICE=cpu" not in r2.stdout, r2.stdout[-200:])
 print(f"\n{fails} failure(s)")
 sys.exit(1 if fails else 0)
